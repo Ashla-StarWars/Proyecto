@@ -2,6 +2,7 @@
 require_once '../../Model/User.php';
 session_start();
 $user = $_SESSION['user'];
+echo "HOLA";
 ?>
 
 <!DOCTYPE html>
