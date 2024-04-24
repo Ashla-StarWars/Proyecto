@@ -12,11 +12,11 @@ $game = new GameController();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["create"])) {
         echo "<p>Create button is clicked.</p>";
-        $game->createGame($lista);
+        $game->createGame($lista, $myuser);
     }
     if (isset($_POST["save"])) {
         echo "<p>Save changes button is clicked.</p>";
-        $game->updateGame($lista);
+        $game->updateGame($lista, $myuser);
     }
     if (isset($_POST["delete"])) {
         echo "<p>Delete button is clicked.</p>";
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 } else {
-    $game->initGamesView();
+    $game->initGamesView($myuser);
 }
 
 class GameController
@@ -55,7 +55,7 @@ class GameController
         }
     }
 
-    public function initGamesView()
+    public function initGamesView($user)
     {
         $consulta = "SELECT max(id_videojuego) From videojuego;";
         $stmt = $this->conn->prepare($consulta);
@@ -88,19 +88,31 @@ class GameController
             }
             $_SESSION["lista"] = $lista_juegos;
 
-            //redirect to login
-            header("Location: ../View/games/games.php");
-            exit();
+            if($user->getAdmin()==1){
+                //redirect to login
+                header("Location: ../View/games/games.php");
+                exit();
+            } else {
+                //redirect to login
+                header("Location: ../View/show-games/showGames.php");
+                exit();
+            }
         }
         $lista_juegos = 0;
         $_SESSION["lista"] = $lista_juegos;
 
-        //redirect to login
-        header("Location: ../View/games/games.php");
-        exit();
+        if($user->getAdmin()==1){
+            //redirect to games
+            header("Location: ../View/games/games.php");
+            exit();
+        } else {
+            //redirect to show-games
+            header("Location: ../View/show-games/showGames.php");
+            exit();
+        }
     }
-
-    public function createGame($lista)
+    
+    public function createGame($lista, $user)
     {
         if (!empty($_POST["name"]) && !empty($_POST["gender"]) && !empty($_POST["developer"]) && !empty($_POST["release_date"]) && !empty($_POST["description"])) {
             $new_game_name = $_POST["name"];
@@ -156,7 +168,7 @@ class GameController
                         $_SESSION["msg"] = "Game added correctly";
                         unset($_SESSION["error"]);
 
-                        $this->initGamesView();
+                        $this->initGamesView($user);
                     }
                 }
             } else {
@@ -175,7 +187,7 @@ class GameController
         }
     }
 
-    public function updateGame($lista)
+    public function updateGame($lista, $user)
     {
         if (isset($_POST["game_id"])) {
 
@@ -276,7 +288,7 @@ class GameController
             $_SESSION["msg"] = "All changes have been saved";
             unset($_SESSION['error']);
 
-            $this->initGamesView();
+            $this->initGamesView($user);
 
         } else {
             $_SESSION["error"] = "No changes made";
@@ -318,7 +330,7 @@ class GameController
                             $_SESSION["msg"] = "Game deleted correctly";
                             unset($_SESSION['error']);
 
-                            $this->initGamesView();
+                            $this->initGamesView($user);
 
                         } else {
                             $_SESSION["error"] = "Game didnt exist";

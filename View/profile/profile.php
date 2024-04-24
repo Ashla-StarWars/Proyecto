@@ -39,7 +39,9 @@ $user = $_SESSION['user'];
                     <a href="../events/events.php">CALENDAR</a>
                     <?php if($user->getAdmin()==1){ ?>
                     <a href="../admin/admin.php">ADMIN</a>
-                    <?php } ?>
+                    <?php } else { ?>
+                    <a href="../../Controller/GameController.php">GAMES</a>
+                    <?php }  ?>
                     <a href="../contact/contact.php">CONTACT</a>
                     <a href="#ABOUT">ABOUT US</a>
                 </nav>
