@@ -48,7 +48,9 @@ $calendar->add_event('Vacations', $tomorrow, 7, 'red');
                     <a href="../news/news.php">NEWS</a>
                     <?php if($user->getAdmin()==1){ ?>
                     <a href="../admin/admin.php">ADMIN</a>
-                    <?php } ?>
+                    <?php } else { ?>
+                    <a href="../../Controller/GameController.php">GAMES</a>
+                    <?php }  ?>
                     <a href="../contact/contact.php">CONTACT</a>
                     <a href="#ABOUT">ABOUT US</a>
                 </nav>

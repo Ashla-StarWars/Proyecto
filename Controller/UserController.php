@@ -364,7 +364,7 @@ class UserController
 
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($resultado && password_verify($password, $resultado['contrasena'])) {
 
                 //check against a database
@@ -635,10 +635,17 @@ class UserController
             }
         }
 
-        if (isset($_POST["old_password"]) && isset($_POST["new_password"]) && isset($_POST["new_password_confirmation"])) {
-            $old_password = $_POST["old_password"];
-            $new_password = $_POST["new_password"];
-            $new_password_confirmation = $_POST["new_password_confirmation"];
+        if (!empty($_POST["old_password"]) && !empty($_POST["new_password"]) && !empty($_POST["new_password_confirmation"])) {
+            
+            if(isset($_POST["old_password"])){
+                $old_password = $_POST["old_password"];
+            }
+            if(isset($_POST["new_password"])){
+                $new_password = $_POST["new_password"];
+            }
+            if(isset($_POST["new_password_confirmation"])){
+                $new_password_confirmation = $_POST["new_password_confirmation"];
+            }
 
             //check against a database
             $consulta = "SELECT id_usuario, contrasena FROM USUARIO WHERE id_usuario=:id";
@@ -647,10 +654,6 @@ class UserController
 
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            var_dump($resultado);
-            echo $old_password;
-            var_dump(password_verify($old_password, $resultado['contrasena'])) ;
 
             if ($resultado && password_verify($old_password, $resultado['contrasena'])) {
 
@@ -673,34 +676,37 @@ class UserController
                 $_SESSION["error"] = "Invalid current password";
 
                 //redirect to login
-                //header("Location: ../View/settings/settings.php");
-                //exit();
+                header("Location: ../View/settings/settings.php");
+                exit();
+            }
+        } 
+
+        if (!empty($_POST["email"]) && !empty($_POST["username"]) && !empty($_POST["surname"]) && !empty($_POST["nickname"]) && !empty($_POST["description"])) {
+            if ($updated) {
+                $_SESSION['user'] = $user;
+                $_SESSION["msg"] = "All changes have been saved";
+                unset($_SESSION["error"]);
+
+                //redirect to login
+                header("Location: ../View/settings/settings.php");
+                exit();
+            } else {
+                $_SESSION["error"] = "No changes made";
+                unset($_SESSION['msg']);
+
+                //redirect to login
+                header("Location: ../View/settings/settings.php");
+                exit();
             }
         } else {
-            unset($_SESSION['msg']);
             $_SESSION["error"] = "Missing field, please complete all fields";
-
-            //redirect to login
-            //header("Location: ../View/settings/settings.php");
-            //exit();
-        }
-
-        if ($updated) {
-            $_SESSION['user'] = $user;
-            $_SESSION["msg"] = "All changes have been saved";
-            unset($_SESSION["error"]);
-
-            //redirect to login
-            header("Location: ../View/settings/settings.php");
-            exit();
-        } else {
-            $_SESSION["error"] = "No changes made";
             unset($_SESSION['msg']);
 
             //redirect to login
             header("Location: ../View/settings/settings.php");
             exit();
         }
+
     }
     public function deleteAccount($user)
     {
@@ -715,10 +721,6 @@ class UserController
 
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            var_dump($resultado);
-            echo $password;
-            var_dump(password_verify($password, $resultado['contrasena'])) ;
 
             if ($resultado && password_verify($password, $resultado['contrasena'])) {
                 $id_result = $resultado['id_usuario'];

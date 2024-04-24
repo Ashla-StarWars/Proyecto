@@ -3,11 +3,6 @@ setTimeout(function () {
     $(".div-msg").fadeOut();
 }, 1500);
 
-$("#botonDelete").click(function () {
-    $("#confirmacion").show();
-    $("#back").show()
-});
-
 $("#back").click(function () {
     $("#confirmacion").css("display", "none")
     $("#back").css("display", "none")
@@ -18,22 +13,9 @@ $("#cancelar").click(function () {
     $("#back").css("display", "none")
 })
 
-//NO VA, se ejecuta primero el action form!!!!!!!!!!!!!!!!!!!!!
-$("#delete").click(function () {
-    $("#form-settings").validate({
-        rules: {
-            password: {
-                required: true,
-                minlength: 8
-            }
-        },
-        messages: {
-            password: {
-                required: "Please enter your password",
-                minlength: "New password must be at least 8 characters long."
-            }
-        }
-    })
+$("#botonDelete").click(function () {
+    $("#confirmacion").show();
+    $("#back").show()
 })
 
 $("#update").click(function () {
