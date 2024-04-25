@@ -142,12 +142,12 @@ class UserController
                             $resenas_result = $resultado['count(*)'];
 
                             //preparar y ejecutar la consulta adicional
-                            $consulta = "SELECT count(*) FROM TORNEO WHERE id_organizador=:id_usuario;";
+                            $consulta = "SELECT count(*) FROM EVENTO WHERE id_organizador=:id_usuario;";
                             $stmt = $this->conn->prepare($consulta);
                             $stmt->bindParam(":id_usuario", $id_result);
                             $stmt->execute();
                             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                            $torneos_result = $resultado['count(*)'];
+                            $eventos_result = $resultado['count(*)'];
 
                             //preparar y ejecutar la consulta adicional
                             $consulta = "SELECT count(*) FROM PARTICIPAR_COMUNIDAD WHERE id_usuario=:id_usuario;";
@@ -173,7 +173,7 @@ class UserController
                                 $nickname_result,
                                 $description_result,
                                 $resenas_result,
-                                $torneos_result,
+                                $eventos_result,
                                 $communitie_result,
                                 $admin_result,
                                 $ban_result,
@@ -285,12 +285,12 @@ class UserController
                         $resenas_result = $resultado['count(*)'];
 
                         //preparar y ejecutar la consulta adicional
-                        $consulta = "SELECT count(*) FROM TORNEO WHERE id_organizador=:id_usuario;";
+                        $consulta = "SELECT count(*) FROM EVENTO WHERE id_organizador=:id_usuario;";
                         $stmt = $this->conn->prepare($consulta);
                         $stmt->bindParam(":id_usuario", $id_result);
                         $stmt->execute();
                         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                        $torneos_result = $resultado['count(*)'];
+                        $eventos_result = $resultado['count(*)'];
 
                         //preparar y ejecutar la consulta adicional
                         $consulta = "SELECT count(*) FROM PARTICIPAR_COMUNIDAD WHERE id_usuario=:id_usuario;";
@@ -316,7 +316,7 @@ class UserController
                             $nickname_result,
                             $description_result,
                             $resenas_result,
-                            $torneos_result,
+                            $eventos_result,
                             $communitie_result,
                             $admin_result,
                             $ban_result,
@@ -394,12 +394,12 @@ class UserController
                     $resenas_result = $resultado['count(*)'];
 
                     //preparar y ejecutar la consulta adicional
-                    $consulta = "SELECT count(*) FROM TORNEO WHERE id_organizador=:id_usuario;";
+                    $consulta = "SELECT count(*) FROM EVENTO WHERE id_organizador=:id_usuario;";
                     $stmt = $this->conn->prepare($consulta);
                     $stmt->bindParam(":id_usuario", $id_result);
                     $stmt->execute();
                     $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $torneos_result = $resultado['count(*)'];
+                    $eventos_result = $resultado['count(*)'];
 
                     //preparar y ejecutar la consulta adicional
                     $consulta = "SELECT count(*) FROM PARTICIPAR_COMUNIDAD WHERE id_usuario=:id_usuario;";
@@ -425,7 +425,7 @@ class UserController
                         $nickname_result,
                         $description_result,
                         $resenas_result,
-                        $torneos_result,
+                        $eventos_result,
                         $communitie_result,
                         $admin_result,
                         $ban_result,

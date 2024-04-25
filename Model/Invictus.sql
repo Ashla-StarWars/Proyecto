@@ -12,12 +12,16 @@ create table VIDEOJUEGO(
     game_image_path varchar(255)
 );
 
-create table TORNEO(
-    id_torneo int primary key auto_increment,
-    nombre varchar(45),
+create table EVENTO(
+    id_evento int primary key auto_increment,
+    nombre varchar(60),
+    tipo varchar (60),
     fecha_inicio date,
     fecha_final date,
     descripcion longtext,
+    estado ENUM('activo', 'cancelado', 'completado') DEFAULT 'activo',
+    ubicacion VARCHAR(100),
+    max_participantes INT,
     id_organizador int,
     id_videojuego int,
 
@@ -35,9 +39,11 @@ create table BAN(
 	id_ban int primary key auto_increment,
     fecha_inicio date,
     fecha_final date,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    motivo_tipo VARCHAR(50),
     motivo longtext,
-    id_usuario int,
-    index(id_usuario)
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_usuario int
 );
 
 create table USUARIO(
@@ -48,16 +54,23 @@ create table USUARIO(
     email varchar(45) unique,
     contrasena varchar(255),
     descripcion longtext,
-    id_torneo_org int,
+    id_evento_org int,
     user_admin boolean,
     id_ban int,
-    user_image_path VARCHAR(255),
-
-    FOREIGN KEY (id_torneo_org) REFERENCES TORNEO(id_organizador) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_ban) REFERENCES BAN(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+    user_image_path VARCHAR(255)
 );
- 
- 
+
+-- Definición de las claves foráneas (foreign keys)
+ALTER TABLE USUARIO
+ADD CONSTRAINT fk_evento_org FOREIGN KEY (id_evento_org) REFERENCES EVENTO(id_organizador) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT fk_ban FOREIGN KEY (id_ban) REFERENCES BAN(id_ban) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE BAN
+ADD CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE EVENTO
+ADD CONSTRAINT fk_id_organizador FOREIGN KEY (id_organizador) REFERENCES USUARIO(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE;
+
 create table ADMINISTRAR_BAN(
     id_ban int,
     id_usuario int,
@@ -92,12 +105,12 @@ create table PARTICIPAR_COMUNIDAD(
     foreign key(id_comunidad) references COMUNIDAD(id_comunidad) ON DELETE CASCADE ON UPDATE CASCADE
 );
  
-create table PARTICIPAR_TORNEO(
+create table PARTICIPAR_EVENTO(
 	id_usuario int,
-    id_torneo int,
+    id_evento int,
 
     foreign key(id_usuario) references USUARIO(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE,
-    foreign key(id_torneo) references TORNEO(id_torneo) ON DELETE CASCADE ON UPDATE CASCADE
+    foreign key(id_evento) references EVENTO(id_evento) ON DELETE CASCADE ON UPDATE CASCADE
 );
  
 create table RESENA(
@@ -110,12 +123,12 @@ create table RESENA(
     foreign key(id_videojuego) references VIDEOJUEGO(id_videojuego) ON DELETE CASCADE ON UPDATE CASCADE
 );
  
-create table ADMINISTRAR_TORNEO(
+create table ADMINISTRAR_EVENTO(
    id_usuario int,
-   id_torneo int,
+   id_evento int,
 
    foreign key(id_usuario) references USUARIO(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE,
-   foreign key(id_torneo) references TORNEO(id_torneo) ON DELETE CASCADE ON UPDATE CASCADE
+   foreign key(id_evento) references EVENTO(id_evento) ON DELETE CASCADE ON UPDATE CASCADE
 );
  
  
@@ -149,23 +162,39 @@ INSERT INTO VIDEOJUEGO (nombre, desarrolladora, fecha_salida, descripcion, gener
 ('The Witcher 3: Wild Hunt', 'CD Projekt', '2015-05-19', 'The Witcher 3: Wild Hunt es un videojuego de rol de acción desarrollado por CD Projekt Red.', 'Action RPG', '../imagenes/games/witcher-game.jpg'),
 ('Rocket League', 'Psyonix', '2015-07-07', 'Rocket League es un videojuego de deportes desarrollado y publicado por Psyonix.', 'Sports', '../imagenes/games/rocketleague-game.jpg');
 
- 
--- Inserts for TORNEO table
-INSERT INTO TORNEO (id_torneo, nombre, fecha_inicio, fecha_final, descripcion, id_organizador, id_videojuego) VALUES 
-(1, 'Tournament1', '2022-03-01', '2022-03-10', 'Description for Tournament1',1, 1),
-(2, 'Tournament2', '2022-04-01', '2022-04-15', 'Description for Tournament2',2, 2),
-(3, 'Tournament3', '2022-05-01', '2022-05-10', 'Description for Tournament3',3, 3),
-(4, 'Tournament4', '2022-06-01', '2022-06-15', 'Description for Tournament4',4, 4),
-(5, 'Tournament5', '2022-07-01', '2022-07-10', 'Description for Tournament5',5, 5);
- 
+-- Inserts for USUARIO table
+INSERT INTO USUARIO (nombre, apellidos, nikname, email, contrasena, descripcion, user_admin, user_image_path ) VALUES 
+('Enric', 'Domènech Aisa', 'Ashla_StarWars', 'enric.160493@gmail.com', '$2y$10$pKwPDp31bTdSh229H4hP7eyuV.9xbrmSgZjd62dPbMnI9PqHP3F0W', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', true, '../imagenes/src/dev-apex.jpg'),
+('Enric', 'Domènech Aisa', 'Ashla_StarWars', 'enric.160493@gmail.es', '$2y$10$pKwPDp31bTdSh229H4hP7eyuV.9xbrmSgZjd62dPbMnI9PqHP3F0W', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', false, '../imagenes/src/usuario.png'),
+('Martina', 'Gil Cervilla', 'martinagilcervilla', 'martinagilcervilla@gmail.es', '$2y$10$CrWZublVEmjkvNIIrYuUoe/.UUlM1u/hWaWTYYBpuwDFgACzpWT4S', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', false, '../imagenes/src/dev.png'),
+('Martina', 'Gil Cervilla', 'martinagilcervilla', 'martinagilcervilla@gmail.com', '$2y$10$CrWZublVEmjkvNIIrYuUoe/.UUlM1u/hWaWTYYBpuwDFgACzpWT4S', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', true, '../imagenes/src/dev.png');
+
 -- Inserts for BAN table
-INSERT INTO BAN (id_ban, fecha_inicio, fecha_final, motivo, id_usuario) VALUES 
-(1, '2022-01-01', '2022-02-01', 'aggression',5),
-(2, '2022-03-01', '2022-04-01', 'Toxi',1),
-(3, '2022-05-01', '2022-06-01', 'Using Script',5),
-(4, '2022-07-01', '2022-08-01', 'Bullying',1),
-(5, '2022-09-01', '2022-10-01', 'Racist',3);
- 
+INSERT INTO BAN (fecha_inicio, fecha_final, estado, motivo_tipo, motivo, fecha_creacion, id_usuario) VALUES 
+('2024-04-01', '2024-04-15', 'activo', 'Comportamiento tóxico', 'Comportamiento tóxico en chat durante partidas de Counter-Strike: Global Offensive.', NOW(), 1),
+('2024-03-20', '2024-03-27', 'activo', 'Uso de trampas', 'Uso de trampas en torneos de Fortnite.', NOW(), 2),
+('2024-02-10', '2024-03-10', 'activo', 'Desconexión intencional', 'Intencionalmente desconectar durante partidas clasificatorias en League of Legends.', NOW(), 3),
+('2024-01-15', '2024-02-01', 'activo', 'Incumplimiento de normas de conducta', 'Incumplimiento de normas de conducta en eventos de Valorant.', NOW(), 4),
+('2024-05-10', '2024-06-01', 'activo', 'Fraude en línea', 'Participación en actividades fraudulentas en línea en World of Warcraft.', NOW(), 1),
+('2024-07-20', '2024-07-30', 'activo', 'Manipulación de puntuaciones', 'Manipulación de puntuaciones en juegos móviles.', NOW(), 2),
+('2024-08-05', '2024-08-20', 'activo', 'Comportamiento disruptivo en línea', 'Comportamiento disruptivo en comunidades en línea de Minecraft.', NOW(), 3),
+('2024-09-01', '2024-09-15', 'activo', 'Uso de macros ilegales', 'Uso de macros ilegales en competiciones de StarCraft II.', NOW(), 4),
+('2024-10-10', '2024-10-30', 'activo', 'Incumplimiento repetido de términos de servicio', 'Incumplimiento repetido de los términos de servicio en Apex Legends.', NOW(), 1),
+('2024-11-15', '2024-12-15', 'activo', 'Actividades no autorizadas', 'Participación en actividades de juego no autorizadas en EVE Online.', NOW(), 2);
+
+-- Inserts for EVENTO table
+INSERT INTO EVENTO (nombre, tipo, fecha_inicio, fecha_final, descripcion, estado, ubicacion, max_participantes, id_organizador, id_videojuego) VALUES 
+('Campeonato de League of Legends', 'Torneo', '2024-05-10', '2024-05-15', '¡Únete al enfrentamiento definitivo en el mundo de Runaterra!', 'activo', 'Estadio XYZ', 100, 1, 1),
+('Festival de Cosplay de Overwatch', 'Convención', '2024-06-20', '2024-06-22', '¡Muestra tu habilidad para recrear los héroes y heroínas del popular shooter!', 'activo', 'Centro de Convenciones ABC', 200, 2, 2),
+('Torneo de Valorant', 'Torneo', '2024-07-15', '2024-07-18', '¡Demuestra tu destreza en el juego táctico de disparos de Riot Games!', 'activo', 'Arenas de Valor', 150, 3, 3),
+('Conferencia de desarrollo de Minecraft', 'Conferencia', '2024-08-10', '2024-08-12', '¡Descubre las últimas novedades en el mundo de la construcción y la creatividad!', 'activo', 'Centro de Exposiciones XYZ', 300, 4, 4),
+('Competencia de Speedrunning de Super Mario Bros', 'Competencia', '2024-09-05', '2024-09-08', '¡Participa en la carrera para completar Super Mario Bros. en el menor tiempo posible!', 'activo', 'Sala de juegos SpeedRunners', 50, 1, 5),
+('Torneo de Counter-Strike: Global Offensive', 'Torneo', '2024-10-20', '2024-10-25', '¡Demuestra tus habilidades en este torneo competitivo de CS:GO!', 'activo', 'Arena de eSports XYZ', 80, 2, 6),
+('Convención de Dota 2', 'Convención', '2024-11-15', '2024-11-17', '¡Únete a la comunidad de Dota 2 y disfruta de charlas, competiciones y más!', 'activo', 'Centro de Convenciones ABC', 300, 3, 7),
+('Fiesta de lanzamiento de Cyberpunk 2077', 'Fiesta de lanzamiento', '2024-12-10', '2024-12-10', '¡Celebra el lanzamiento de uno de los juegos más esperados del año!', 'activo', 'Bar Futurista XYZ', 150, 4, 8),
+('Conferencia de Desarrolladores de Fortnite', 'Conferencia', '2025-01-15', '2025-01-17', '¡Aprende sobre las últimas actualizaciones y características del popular juego de Battle Royale!', 'activo', 'Centro de Convenciones XYZ', 250, 1, 9),
+('Torneo de Hearthstone', 'Torneo', '2025-02-20', '2025-02-22', '¡Demuestra tu habilidad en el juego de cartas de Blizzard y compite por grandes premios!', 'activo', 'Salón de Juegos Hearthstone', 100, 2, 10);
+
 -- Inserts for COMUNIDAD table
 INSERT INTO COMUNIDAD (id_comunidad, nombre, descripcion) VALUES 
 (1, 'Community1', 'Description for Community1'),
@@ -174,12 +203,6 @@ INSERT INTO COMUNIDAD (id_comunidad, nombre, descripcion) VALUES
 (4, 'Community4', 'Description for Community4'),
 (5, 'Community5', 'Description for Community5');
 
--- Inserts for USUARIO table
-INSERT INTO USUARIO (nombre, apellidos, nikname, email, contrasena, descripcion, user_admin, user_image_path ) VALUES 
-('Enric', 'Domènech Aisa', 'Ashla_StarWars', 'enric.160493@gmail.com', '$2y$10$pKwPDp31bTdSh229H4hP7eyuV.9xbrmSgZjd62dPbMnI9PqHP3F0W', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', true, '../imagenes/src/dev-apex.jpg'),
-('Enric', 'Domènech Aisa', 'Ashla_StarWars', 'enric.160493@gmail.es', '$2y$10$pKwPDp31bTdSh229H4hP7eyuV.9xbrmSgZjd62dPbMnI9PqHP3F0W', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', false, '../imagenes/src/usuario.png'),
-('Martina', 'Gil Cervilla', 'martinagilcervilla', 'martinagilcervilla@gmail.es', '$2y$10$CrWZublVEmjkvNIIrYuUoe/.UUlM1u/hWaWTYYBpuwDFgACzpWT4S', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', false, '../imagenes/src/dev.png'),
-('Martina', 'Gil Cervilla', 'martinagilcervilla', 'martinagilcervilla@gmail.com', '$2y$10$CrWZublVEmjkvNIIrYuUoe/.UUlM1u/hWaWTYYBpuwDFgACzpWT4S', 'Soy un verdadero apasionado de los videojuegos, siempre listo para sumergirme en nuevas aventuras virtuales y compartir mi entusiasmo con otros jugadores en la comunidad en línea.', true, '../imagenes/src/dev.png');
 
 -- Inserts for ADMINISTRAR_BAN table
 INSERT INTO ADMINISTRAR_BAN (id_ban, id_usuario) VALUES (1,1), (2,2), (3,1), (4,2), (5,1);
@@ -203,8 +226,8 @@ INSERT INTO PARTICIPAR_COMUNIDAD (id_usuario, id_comunidad, fecha_union) VALUES
 (2,4, '2022-04-01'),
 (1,5, '2022-05-01');
 
--- Inserts for PARTICIPAR_TORNEO table
-INSERT INTO PARTICIPAR_TORNEO (id_usuario, id_torneo) VALUES (1,1), (1,2), (2,3), (2,4), (1,5);
+-- Inserts for PARTICIPAR_EVENTO table
+INSERT INTO PARTICIPAR_EVENTO (id_usuario, id_evento) VALUES (1,1), (1,2), (2,3), (2,4), (1,5);
 
 -- Inserts for RESENA table
 INSERT INTO RESENA (fecha_publicacion, descripcion, id_usuario, id_videojuego) VALUES 
@@ -215,11 +238,13 @@ INSERT INTO RESENA (fecha_publicacion, descripcion, id_usuario, id_videojuego) V
 ('2022-04-01', 'Review for CS2', 1, 4),
 ('2022-05-01', 'Review for Minecraft', 2, 5);
 
--- Inserts for ADMINISTRAR_TORNEO table
-INSERT INTO ADMINISTRAR_TORNEO (id_usuario, id_torneo) VALUES (1,1), (1,2), (2,3), (2,4), (1,5);
+-- Inserts for ADMINISTRAR_EVENTO table
+INSERT INTO ADMINISTRAR_EVENTO (id_usuario, id_evento) VALUES (1,1), (1,2), (2,3), (2,4), (1,5);
 
 SELECT * FROM USUARIO;
 SELECT * FROM VIDEOJUEGO;
+SELECT * FROM EVENTO;
+SELECT * FROM BAN;
 
 /*
 DELETE FROM videojuego where id_videojuego=1;

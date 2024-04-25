@@ -90,13 +90,13 @@ $user = $_SESSION['user'];
                     <p><strong> Nº Reviews: </strong>
                         <?php echo $user->getNumResenyas() ?>
                     </p>
-                    <p><strong> Nº Played tournaments: </strong>
+                    <p><strong> Nº Events: </strong>
                         <?php echo $user->getNumTorneos() ?>
                     </p>
                     <p><strong> Nº Communities: </strong>
                         <?php echo $user->getNumComunidades() ?>
                     </p>
-                    <p><strong> Nº Bans received: </strong>
+                    <p><strong> Nº Bans: </strong>
                         <?php echo $user->getNumBan() ?>
                     </p>
                 </div>
