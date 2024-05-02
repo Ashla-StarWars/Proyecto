@@ -7,6 +7,7 @@ unset($_SESSION["error"]);
 $myuser = $_SESSION['user'];
 $lista = $_SESSION["lista"];
 $game = new GameController();
+echo "HOLA JIAHAO";
 
 
 echo("HOLA");
