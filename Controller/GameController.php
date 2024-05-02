@@ -7,10 +7,7 @@ unset($_SESSION["error"]);
 $myuser = $_SESSION['user'];
 $lista = $_SESSION["lista"];
 $game = new GameController();
-echo "HOLA JIAHAO";
 
-
-echo("HOLA");
 //var_dump($_POST);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["create"])) {
