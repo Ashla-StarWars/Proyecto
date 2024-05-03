@@ -58,7 +58,7 @@ $(".cancelar").click(function () {
 
 if (mostraLista) {
     $('.slider').slick({
-        slidesToShow: 7,
+        slidesToShow: 13,
         slidesToScroll: 1,
         dots: false,
         autoplay: true,
@@ -66,7 +66,40 @@ if (mostraLista) {
         arrows: false,
         responsive: [
             {
-                breakpoint: 1200,
+                breakpoint: 2500,
+                settings: {
+                    slidesToShow: 11,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 1500,
+                    dots: false,
+                    arrows: false
+                }
+            },
+            {
+                breakpoint: 2100,
+                settings: {
+                    slidesToShow: 9,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 1500,
+                    dots: false,
+                    arrows: false
+                }
+            },
+            {
+                breakpoint: 1700,
+                settings: {
+                    slidesToShow: 7,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 1500,
+                    dots: false,
+                    arrows: false
+                }
+            },
+            {
+                breakpoint: 1350,
                 settings: {
                     slidesToShow: 5,
                     slidesToScroll: 1,
@@ -88,7 +121,7 @@ if (mostraLista) {
                 }
             }, ,
             {
-                breakpoint: 780,
+                breakpoint: 800,
                 settings: {
                     slidesToShow: 3,
                     slidesToScroll: 1,
