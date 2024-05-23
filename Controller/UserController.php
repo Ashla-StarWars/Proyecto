@@ -4,7 +4,7 @@ session_start();
 unset($_SESSION["error_login"]);
 $user = new UserController();
 
-var_dump($_POST);
+//var_dump($_POST);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //check buttons
     if (isset($_POST["login"])) {
@@ -43,6 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../View/settings/settings.php");
         exit();
     }
+    if (isset($_POST["ajax"])) {
+        $myuser = $_SESSION['user'];
+        $user->ajax($myuser);
+    }
 }
 
 class UserController
@@ -58,10 +62,171 @@ class UserController
         try {
             $this->conn = new PDO($dsn, $username, $password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo "Connected successfully";
+            //echo "Connected successfully";
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
+    }
+    
+    public function ajax($user){
+
+        $id = $user->getID();
+        $updated = false;
+        
+        if (isset($_POST["email"])&&!empty($_POST["email"])) {
+            $new_email = $_POST["email"];
+            $email = $user->getEmail();
+            if ($email != $new_email) {
+                //check against a database
+                $consulta = "UPDATE USUARIO SET email=:email where id_usuario=:id";
+                $stmt = $this->conn->prepare($consulta);
+                $stmt->bindParam(":email", $new_email);
+                $stmt->bindParam(":id", $id);
+
+                if ($stmt->execute()) {
+                    $updated = true;
+                    $user->setEmail($new_email);
+                }
+            }
+        }
+
+        if (isset($_POST["username"]) && !empty($_POST["username"])) {
+            $new_username = $_POST["username"];
+            $username = $user->getUsername();
+            if ($username != $new_username) {
+                //check against a database
+                $consulta = "UPDATE USUARIO SET nombre=:nombre where id_usuario=:id";
+                $stmt = $this->conn->prepare($consulta);
+                $stmt->bindParam(":nombre", $new_username);
+                $stmt->bindParam(":id", $id);
+
+                if ($stmt->execute()) {
+                    $updated = true;
+                    $user->setUsername($new_username);
+                }
+            }
+        }
+
+        if (isset($_POST["surname"]) && !empty($_POST["surname"])) {
+            $new_surname = $_POST["surname"];
+            $surname = $user->getSurname();
+            if ($surname != $new_surname) {
+                //check against a database
+                $consulta = "UPDATE USUARIO SET apellidos=:apellidos where id_usuario=:id";
+                $stmt = $this->conn->prepare($consulta);
+                $stmt->bindParam(":apellidos", $new_surname);
+                $stmt->bindParam(":id", $id);
+
+                if ($stmt->execute()) {
+                    $updated = true;
+                    $user->setSurname($new_surname);
+                }
+            }
+        }
+
+        if (isset($_POST["nickname"]) && !empty($_POST["nickname"])) {
+            $new_nickname = $_POST["nickname"];
+            $nickname = $user->getNickname();
+            if ($nickname != $new_nickname) {
+                //check against a database
+                $consulta = "UPDATE USUARIO SET nikname=:nickname where id_usuario=:id";
+                $stmt = $this->conn->prepare($consulta);
+                $stmt->bindParam(":nickname", $new_nickname);
+                $stmt->bindParam(":id", $id);
+
+                if ($stmt->execute()) {
+                    $updated = true;
+                    $user->setNickname($new_nickname);
+                }
+            }
+        }
+
+        if (isset($_POST["description"]) && !empty($_POST["description"])) {
+            $new_description = $_POST["description"];
+            $description = $user->getDescription();
+            if ($description != $new_description) {
+                //check against a database
+                $consulta = "UPDATE USUARIO SET descripcion=:description where id_usuario=:id";
+                $stmt = $this->conn->prepare($consulta);
+                $stmt->bindParam(":description", $new_description);
+                $stmt->bindParam(":id", $id);
+
+                if ($stmt->execute()) {
+                    $updated = true;
+                    $user->setDescription($new_description);
+                }
+            }
+        }
+
+        if (!empty($_POST["email"]) && !empty($_POST["username"]) && !empty($_POST["surname"]) && !empty($_POST["nickname"]) && !empty($_POST["description"])) {
+            if ($updated) {
+                $_SESSION['user'] = $user;
+                $_SESSION["msg"] = "All changes have been saved";
+                unset($_SESSION["error"]);
+                $resposta["respuesta"]= "0";
+
+            } else {
+                $_SESSION["error"] = "No changes made";
+                unset($_SESSION['msg']);
+                $resposta["respuesta"]= "-1";
+            }
+        } else {
+            $_SESSION["error"] = "Missing field, please complete all fields";
+            unset($_SESSION['msg']);
+            $resposta["respuesta"]= "-3";
+        }
+
+        if (!empty($_POST["old_password"]) && !empty($_POST["new_password"]) && !empty($_POST["new_password_confirmation"])) {
+            
+            if(isset($_POST["old_password"])){
+                $old_password = $_POST["old_password"];
+            }
+            if(isset($_POST["new_password"])){
+                $new_password = $_POST["new_password"];
+            }
+            if(isset($_POST["new_password_confirmation"])){
+                $new_password_confirmation = $_POST["new_password_confirmation"];
+            }
+
+            //check against a database
+            $consulta = "SELECT id_usuario, contrasena FROM USUARIO WHERE id_usuario=:id";
+            $stmt = $this->conn->prepare($consulta);
+            $stmt->bindParam(":id", $id);
+
+            $stmt->execute();
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($resultado && password_verify($old_password, $resultado['contrasena'])) {
+
+                if ($old_password != $new_password && $new_password == $new_password_confirmation) {
+                    $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+                    //check against a database
+                    $consulta = "UPDATE USUARIO SET contrasena=:new_password where id_usuario=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":new_password", $new_hashed_password);
+                    $stmt->bindParam(":id", $id);
+
+                    if ($stmt->execute()) {
+                        unset($_SESSION['error']);
+                        $_SESSION["msg"] = "All changes have been saved";
+                        $resposta["respuesta"]= "0";
+                    }
+                } else {
+                    $_SESSION["error"] = "No changes made";
+                    unset($_SESSION['msg']);
+                    $resposta["respuesta"]= "-1";
+                }
+
+            } else {
+                unset($_SESSION['msg']);
+                $_SESSION["error"] = "Invalid current password";
+                $resposta["respuesta"]= "-2";
+            }
+        }
+
+        $res_json=json_encode($resposta);
+        echo $res_json;
     }
 
     public function register(): void
@@ -550,7 +715,7 @@ class UserController
     {
         $id = $user->getID();
         $updated = false;
-        if (isset($_POST["email"])) {
+        if (isset($_POST["email"]) && !empty($_POST["email"])) {
             $new_email = $_POST["email"];
             $email = $user->getEmail();
             if ($email != $new_email) {
@@ -567,7 +732,7 @@ class UserController
             }
         }
 
-        if (isset($_POST["username"])) {
+        if (isset($_POST["username"]) && !empty($_POST["username"])) {
             $new_username = $_POST["username"];
             $username = $user->getUsername();
             if ($username != $new_username) {
@@ -584,7 +749,7 @@ class UserController
             }
         }
 
-        if (isset($_POST["surname"])) {
+        if (isset($_POST["surname"]) && !empty($_POST["surname"])) {
             $new_surname = $_POST["surname"];
             $surname = $user->getSurname();
             if ($surname != $new_surname) {
@@ -601,7 +766,7 @@ class UserController
             }
         }
 
-        if (isset($_POST["nickname"])) {
+        if (isset($_POST["nickname"]) && !empty($_POST["nickname"])) {
             $new_nickname = $_POST["nickname"];
             $nickname = $user->getNickname();
             if ($nickname != $new_nickname) {
@@ -618,7 +783,7 @@ class UserController
             }
         }
 
-        if (isset($_POST["description"])) {
+        if (isset($_POST["description"]) && !empty($_POST["description"])) {
             $new_description = $_POST["description"];
             $description = $user->getDescription();
             if ($description != $new_description) {
@@ -669,6 +834,13 @@ class UserController
                     if ($stmt->execute()) {
                         $updated = true;
                     }
+                } else {
+                    $_SESSION["error"] = "No changes made";
+                    unset($_SESSION['msg']);
+                    
+                    //redirect to login
+                    header("Location: ../View/settings/settings.php");
+                    exit();
                 }
 
             } else {
@@ -748,5 +920,6 @@ class UserController
             }
         }
     }
+
 }
 

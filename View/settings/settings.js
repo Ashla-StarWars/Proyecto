@@ -18,6 +18,7 @@ $("#botonDelete").click(function () {
     $("#back").show()
 })
 
+var isValid = false;
 $("#update").click(function () {
     $("#form-settings").validate({
         rules: {
@@ -87,4 +88,72 @@ $("#update").click(function () {
     })
 });
 
+$("#ajax").click(function () {
+    $("#form-settings").valid();
+    console.log("#ajax button clicked");
 
+    var email = $('input[name="email"]').val();
+    var username = $('input[name="username"]').val();
+    var surname = $('input[name="surname"]').val();
+    var nickname = $('input[name="nickname"]').val();
+    var description = $('textarea[name="description"]').val();
+    var old_password = $('input[name="old_password"]').val();
+    var new_password = $('input[name="new_password"]').val();
+    var new_password_confirmation = $('input[name="new_password_confirmation"]').val();
+
+    //NO VALIDA EL FORMULARIO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+    if (!isValid) {
+        console.log("Form is valid, submitting AJAX request");
+
+        $.ajax({
+            type: "POST",
+            url: "../../Controller/UserController.php",
+            data: { 
+                "ajax": "ajax" ,
+                "email":email,
+                "username":username,
+                "surname":surname,
+                "nickname":nickname,
+                "description":description,
+                "old_password":old_password,
+                "new_password":new_password,
+                "new_password_confirmation":new_password_confirmation
+            },
+            dataType: "json",
+            success: function (resposta) {
+                console.log(resposta);
+
+                location.reload();
+
+                //NO SETEA EL MENSAJE
+                switch (resposta["respuesta"]) {
+                    case "0":
+                        $("#msg").html("All changes have been saved")
+                        break;
+                    case "-1":
+                        $("#error").html("No changes made")
+                        break;
+                    case "-2":
+                        $("#error").html("Invalid current password")
+                        break;
+                    case "-3":
+                        $("#error").html("Missing field, please complete all fields")
+                        break;
+
+                    default:
+                        $("#error").html("Something wierd happend")
+                        break;
+                }
+
+                //AL HACER EL RELOAD SE PIERDE EL JSON Y LOS CONSOLE.LOG
+                location.reload()
+
+                $(".div-msg").fadeIn();
+                setTimeout(function () {
+                    $(".div-msg").fadeOut();
+                }, 1500);
+
+            }
+        })
+    }
+});
