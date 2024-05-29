@@ -100,13 +100,17 @@ $user = $_SESSION['user'];
                     <input class="boton" id="update" type="submit" name="update" value="SAVE CHANGES">
                 </div>
                 <div class="div-msg">
-                    <?php if (isset($_SESSION["msg"])) {
-                        echo "<p id='msg' style='color:green;margin-block-end:0em;margin-block-start:0em;'>" . $_SESSION["msg"] . "</p>";
-                    } ?>
-                    <?php if (isset($_SESSION["error"])) {
-                        echo "<p id='error' style='color:red;margin-block-end:0em;margin-block-start:0em;'>" . $_SESSION["error"] . "</p>";
-                    } ?>
+                    <?php if (isset($_SESSION["msg"])) { ?>
+                        <p id='msg' style='color:green;margin-block-end:0em;margin-block-start:0em;'> <?php //echo $_SESSION["msg"] ?> </p>
+                    <?php } ?>
+                    <?php if (isset($_SESSION["error"])) { ?>
+                        <p id='error' style='color:red;margin-block-end:0em;margin-block-start:0em;'> <?php //echo $_SESSION["error"] ?> </p>
+                    <?php } ?>
                 </div>
+                <!--<div class="div-msg">
+                    <p id="msg_ajax"></p>
+                    <p id="error_ajax"></p>
+                </div>-->
             </div>
 
             <div id="back"></div>

@@ -920,6 +920,4 @@ class UserController
             }
         }
     }
-
 }
-
