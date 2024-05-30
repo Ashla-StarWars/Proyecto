@@ -127,27 +127,35 @@ $("#ajax").click(function () {
             success: function (resposta) {
                 console.log(resposta);
 
+                $("#error").html("")
+                $("#msg").html("")
                 //NO SETEA EL MENSAJE
                 switch (resposta["respuesta"]) {
 
                     case "0":
-                        $("#msg").html("All changes have been saved")
+                        
+                        $("#msg_ajax").html("All changes have been saved")
+                        $("#error_ajax").html("")
                         break;
 
                     case "-1":
-                        $("#error").html("No changes made")
+                        $("#error_ajax").html("No changes made")
+                        $("#msg_ajax").html("")
                         break;
 
                     case "-2":
-                        $("#error").html("Invalid current password")
+                        $("#error_ajax").html("Invalid current password")
+                        $("#msg_ajax").html("")
                         break;
 
                     case "-3":
-                        $("#error").html("Missing field, please complete all fields")
+                        $("#error_ajax").html("Missing field, please complete all fields")
+                        $("#msg_ajax").html("")
                         break;
 
                     default:
-                        $("#error").html("Something wierd happend")
+                        $("#error_ajax").html("Something wierd happend")
+                        $("#msg_ajax").html("")
                         break;
                 }
 

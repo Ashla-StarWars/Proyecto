@@ -161,18 +161,15 @@ class UserController
         if (!empty($_POST["email"]) && !empty($_POST["username"]) && !empty($_POST["surname"]) && !empty($_POST["nickname"]) && !empty($_POST["description"])) {
             if ($updated) {
                 $_SESSION['user'] = $user;
-                $_SESSION["msg"] = "All changes have been saved";
-                unset($_SESSION["error"]);
+                $_SESSION["msg"] = "";
                 $resposta["respuesta"]= "0";
 
             } else {
-                $_SESSION["error"] = "No changes made";
-                unset($_SESSION['msg']);
+                $_SESSION["error"] = "";
                 $resposta["respuesta"]= "-1";
             }
         } else {
-            $_SESSION["error"] = "Missing field, please complete all fields";
-            unset($_SESSION['msg']);
+            $_SESSION["error"] = "";
             $resposta["respuesta"]= "-3";
         }
 
@@ -208,19 +205,16 @@ class UserController
                     $stmt->bindParam(":id", $id);
 
                     if ($stmt->execute()) {
-                        unset($_SESSION['error']);
-                        $_SESSION["msg"] = "All changes have been saved";
+                        $_SESSION["msg"] = "";
                         $resposta["respuesta"]= "0";
                     }
                 } else {
-                    $_SESSION["error"] = "No changes made";
-                    unset($_SESSION['msg']);
+                    $_SESSION["error"] = "";
                     $resposta["respuesta"]= "-1";
                 }
 
             } else {
-                unset($_SESSION['msg']);
-                $_SESSION["error"] = "Invalid current password";
+                $_SESSION["error"] = "";
                 $resposta["respuesta"]= "-2";
             }
         }

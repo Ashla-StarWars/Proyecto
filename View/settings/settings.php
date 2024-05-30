@@ -101,16 +101,16 @@ $user = $_SESSION['user'];
                 </div>
                 <div class="div-msg">
                     <?php if (isset($_SESSION["msg"])) { ?>
-                        <p id='msg' style='color:green;margin-block-end:0em;margin-block-start:0em;'> <?php //echo $_SESSION["msg"] ?> </p>
+                        <p id='msg' style='color:green;margin-block-end:0em;margin-block-start:0em;'> <?php echo $_SESSION["msg"] ?> </p>
                     <?php } ?>
                     <?php if (isset($_SESSION["error"])) { ?>
-                        <p id='error' style='color:red;margin-block-end:0em;margin-block-start:0em;'> <?php //echo $_SESSION["error"] ?> </p>
+                        <p id='error' style='color:red;margin-block-end:0em;margin-block-start:0em;'> <?php echo $_SESSION["error"] ?> </p>
                     <?php } ?>
                 </div>
-                <!--<div class="div-msg">
-                    <p id="msg_ajax"></p>
-                    <p id="error_ajax"></p>
-                </div>-->
+                <div class="div-msg">
+                    <p id="msg_ajax" style='color:green;margin-block-end:0em;margin-block-start:0em;'></p>
+                    <p id="error_ajax" style='color:red;margin-block-end:0em;margin-block-start:0em;'></p>
+                </div>
             </div>
 
             <div id="back"></div>
