@@ -84,19 +84,13 @@ $("#form-settings").validate({
             minlength: "Confirmation password must be at least 8 characters long.",
             equalTo: "Passwords do not match."
         },
-    },
-    //submitHandler(){
-       // isValid= true;
-    //}
+    }
 })
 
 $("#ajax").click(function () {
     isValid= $("#form-settings").valid();
     console.log("#ajax button clicked");
-
-
-
-    //NO VALIDA EL FORMULARIO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+ 
     if (isValid) {
         var email = $('input[name="email"]').val();
         var username = $('input[name="username"]').val();
@@ -129,11 +123,10 @@ $("#ajax").click(function () {
 
                 $("#error").html("")
                 $("#msg").html("")
-                //NO SETEA EL MENSAJE
+     
                 switch (resposta["respuesta"]) {
 
                     case "0":
-                        
                         $("#msg_ajax").html("All changes have been saved")
                         $("#error_ajax").html("")
                         break;
@@ -158,9 +151,6 @@ $("#ajax").click(function () {
                         $("#msg_ajax").html("")
                         break;
                 }
-
-                //AL HACER EL RELOAD SE PIERDE EL JSON Y LOS CONSOLE.LOG
-                //location.reload()
 
                 $(".div-msg").fadeIn();
                 setTimeout(function () {
