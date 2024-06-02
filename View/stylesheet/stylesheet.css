@@ -654,7 +654,7 @@ header {
     transition: background-color 0.3s ease;
 }
 
-#updateGame #save {
+#updateGame #save,#ajax-button{
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;

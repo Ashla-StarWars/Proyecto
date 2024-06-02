@@ -5,7 +5,7 @@ session_start();
 unset($_SESSION["msg"]);
 unset($_SESSION["error"]);
 $myuser = $_SESSION['user'];
-$lista = $_SESSION["lista"];
+$lista = isset($_SESSION["lista"]) ? $_SESSION["lista"] : [];
 $game = new GameController();
 
 //var_dump($_POST);
@@ -29,6 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../View/games/games.php");
         exit();
     }
+    
+    if (isset($_POST["ajax"])) {
+        echo "<p>Update AJAX button is clicked.</p>";
+        $game->ajaxGame($lista, $myuser);
+    }
+
 } else {
     $game->initGamesView($myuser);
 }
@@ -55,6 +61,122 @@ class GameController
         }
     }
 
+    public function ajaxGame($lista, $myuser) {
+
+    if (isset($_POST["ajax"]) && $_POST["ajax"] == "ajax" && isset($_POST["game_id"])) {
+        error_log("Solicitud AJAX recibida");
+
+        $game_id = $_POST["game_id"];
+        $updated = false;
+
+        if (array_key_exists($game_id, $lista) && $lista[$game_id]->getId() == $game_id) {
+            error_log("ID del juego coincide");
+
+            if (isset($_POST["name"])) {
+                $new_game_name = $_POST["name"];
+                if ($new_game_name != $lista[$game_id]->getName()) {
+                    $consulta = "UPDATE VIDEOJUEGO SET nombre=:nombre WHERE id_videojuego=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":nombre", $new_game_name);
+                    $stmt->bindParam(":id", $game_id);
+
+                    if ($stmt->execute()) {
+                        $updated = true;
+                        $lista[$game_id]->setName($new_game_name);
+                    }
+                }
+            }
+
+            if (isset($_POST["gender"])) {
+                $new_game_gender = $_POST["gender"];
+                if ($new_game_gender != $lista[$game_id]->getGender()) {
+                    $consulta = "UPDATE VIDEOJUEGO SET genero=:gender WHERE id_videojuego=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":gender", $new_game_gender);
+                    $stmt->bindParam(":id", $game_id);
+
+                    if ($stmt->execute()) {
+                        $updated = true;
+                        $lista[$game_id]->setGender($new_game_gender);
+                    }
+                }
+            }
+
+            if (isset($_POST["developer"])) {
+                $new_game_developer = $_POST["developer"];
+                if ($new_game_developer != $lista[$game_id]->getDeveloper()) {
+                    $consulta = "UPDATE VIDEOJUEGO SET desarrolladora=:developer WHERE id_videojuego=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":developer", $new_game_developer);
+                    $stmt->bindParam(":id", $game_id);
+
+                    if ($stmt->execute()) {
+                        $updated = true;
+                        $lista[$game_id]->setDeveloper($new_game_developer);
+                    }
+                }
+            }
+
+            if (isset($_POST["release_date"])) {
+                $new_game_release_date = $_POST["release_date"];
+                if ($new_game_release_date != $lista[$game_id]->getReleaseDate()) {
+                    $consulta = "UPDATE VIDEOJUEGO SET fecha_salida=:release_date WHERE id_videojuego=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":release_date", $new_game_release_date);
+                    $stmt->bindParam(":id", $game_id);
+
+                    if ($stmt->execute()) {
+                        $updated = true;
+                        $lista[$game_id]->setReleaseDate($new_game_release_date);
+                    }
+                }
+            }
+
+            if (isset($_POST["description"])) {
+                $new_game_description = $_POST["description"];
+                if ($new_game_description != $lista[$game_id]->getDescription()) {
+                    $consulta = "UPDATE VIDEOJUEGO SET descripcion=:description WHERE id_videojuego=:id";
+                    $stmt = $this->conn->prepare($consulta);
+                    $stmt->bindParam(":description", $new_game_description);
+                    $stmt->bindParam(":id", $game_id);
+
+                    if ($stmt->execute()) {
+                        $updated = true;
+                        $lista[$game_id]->setDescription($new_game_description);
+                    }
+                }
+            }
+        }
+
+        if ($updated) {
+            $_SESSION['lista'] = $lista;
+            // Limpiar el buffer de salida y capturar la salida
+            $output = ob_get_clean();
+            if ($output) {
+                error_log("Salida capturada: " . $output);
+            }
+            header('Content-Type: application/json'); // Añadir esta línea
+            echo json_encode(["success" => true, "message" => "All changes have been saved"]);
+        } else {
+            $output = ob_get_clean();
+            if ($output) {
+                error_log("Salida capturada: " . $output);
+            }
+            header('Content-Type: application/json'); // Añadir esta línea
+            echo json_encode(["success" => false, "message" => "No changes made"]);
+        }
+        exit();
+    } else {
+        error_log("Solicitud AJAX no válida o falta el ID del juego");
+        $output = ob_get_clean();
+        if ($output) {
+            error_log("Salida capturada: " . $output);
+        }
+        header('Content-Type: application/json'); // Añadir esta línea
+        echo json_encode(["success" => false, "message" => "Solicitud no válida"]);
+        exit();
+    }
+    }
     public function initGamesView($user)
     {
         $consulta = "SELECT max(id_videojuego) From videojuego;";

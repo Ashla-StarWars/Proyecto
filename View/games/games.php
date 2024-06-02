@@ -192,7 +192,13 @@ if ($lista != 0) {
                     <br>
                     <!--<input type="text" id="img_game_path" name="img_game_path"><br><br>-->
                     <input id="save" type="submit" name="save" value="Save">
+                    <input id="ajax-button" type="submit" name="ajax-save" value="Save as AJAX">
                     <input class="cancelar" type="submit" name="cancel" value="Cancel">
+
+                    <div class="div-msg">
+                    <p id="msg_ajax" style='color:green;margin-block-end:0em;margin-block-start:0em;'></p>
+                    <p id="error_ajax" style='color:red;margin-block-end:0em;margin-block-start:0em;'></p>
+                    </div>
                 </form>
             </div>
 
